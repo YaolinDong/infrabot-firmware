@@ -28,8 +28,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 project(${CMAKE_PROJECT_NAME})
 message("Build type: " ${CMAKE_BUILD_TYPE})
 
-option(FW_NETBOOT "Build the signed A/B application" ON)
-option(FW_STANDALONE "Explicit standalone image at 0x08000000 (non-netboot boards only)" OFF)
+option(FW_NETBOOT "Build the signed A/B application" OFF)
+option(FW_STANDALONE "Explicit standalone image at 0x08000000 (non-netboot boards only)" ON)
 if((NOT FW_NETBOOT AND NOT FW_STANDALONE) OR (FW_NETBOOT AND FW_STANDALONE))
     message(FATAL_ERROR "Choose A/B (FW_NETBOOT=ON) or the explicit StandaloneDebug preset for non-netboot boards.")
 endif()
@@ -61,7 +61,7 @@ file(GLOB LWIP_CORE_SOURCES CONFIGURE_DEPENDS
 enable_language(C ASM)
 
 # Create an executable object type
-add_library(${CMAKE_PROJECT_NAME} STATIC)
+add_executable(${CMAKE_PROJECT_NAME})
 
 # Add STM32CubeMX generated sources
 include(boards/fire-h743-challenger-v2/board.cmake)
@@ -110,8 +110,15 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     app/app_startup.c
     app/app_rtos.c
     drivers/display/app_sdram.c
+    ui/app_lcd_boot.c
     drivers/display/app_lcd.c
     drivers/display/app_lcd_panel.c
+    ui/app_lcd_text.c
+    ui/app_lcd_font.c
+    ui/app_lcd_zh.c
+    ui/app_lcd_ui.c
+    ui/app_lcd_3d.c
+    ui/app_lcd_mesh.c
     drivers/display/app_touch.c
     third_party/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_ltdc.c
     third_party/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_sdram.c
@@ -198,3 +205,19 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE "${CMAKE_BINARY_DIR}/ge
 
 set_source_files_properties(control/arm_admittance_jitter.c control/app_admittance_parameters.c control/arm_admittance.c control/app_admittance.c control/arm_impedance.c control/app_impedance.c PROPERTIES COMPILE_OPTIONS "-O2")
 
+if(FW_NETBOOT)
+    include(bootloader/build.cmake)
+else()
+    set_target_properties(infrabot_firmware PROPERTIES OUTPUT_NAME "infrabot_firmware-standalone")
+endif()
+
+set(image_targets ${CMAKE_PROJECT_NAME})
+if(FW_NETBOOT)
+    list(APPEND image_targets infrabot_firmware_b netboot_loader)
+endif()
+foreach(image IN LISTS image_targets)
+    add_custom_command(TARGET ${image} POST_BUILD
+        COMMAND ${CMAKE_OBJCOPY} -O binary "$<TARGET_FILE:${image}>"
+            "$<TARGET_FILE_DIR:${image}>/$<TARGET_FILE_BASE_NAME:${image}>.bin"
+        VERBATIM)
+endforeach()

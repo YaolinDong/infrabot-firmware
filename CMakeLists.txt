@@ -73,12 +73,22 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
+    drivers/damiao/dm_motor.c
+    drivers/damiao/dm_protocol.c
+    app/app_state.c
+    drivers/can/bus_state.c
     control/control_stats.c
+    drivers/damiao/dm_runtime.c
+    drivers/net/eth_state.c
+    app/uart_tx_state.c
+    app/app_persist.c
+    app/app_tasks.c
     control/arm_motion.c
     control/infrabot_ik_mcu.c
     control/app_motion.c
     control/app_control_mode.c
     control/robot_controller.c
+    drivers/damiao/app_damiao.c
     control/app_enable.c
     control/app_arm_power.c
     control/app_gripper.c
@@ -91,10 +101,26 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     control/app_admittance_parameters.c
     control/app_gravity.c
     control/app_local_control.c
+    app/app_panel.c
     control/arm_gravity.cpp
+    app/app_uart.c
+    app/app_log.c
+    app/app_log_task.c
+    drivers/can/app_fdcan.c
+    app/app_startup.c
+    app/app_rtos.c
+    drivers/display/app_sdram.c
+    drivers/display/app_lcd.c
+    drivers/display/app_lcd_panel.c
+    drivers/display/app_touch.c
     third_party/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_ltdc.c
     third_party/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_sdram.c
     third_party/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_fmc.c
+    drivers/net/ethernetif.c
+    drivers/net/app_info.c
+    drivers/net/app_ethernet.c
+    app/freertos_heap.c
+    app/lwip_heap.c
     ${LWIP_CORE_SOURCES}
     ${ETH_COMPONENT_ROOT}/lan8742.c
     ${FREERTOS_ROOT}/tasks.c

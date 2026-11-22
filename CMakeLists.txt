@@ -1,2 +1,5 @@
-cmake_minimum_required(VERSION 3.16)
-project(infrabot_firmware LANGUAGES NONE)
+cmake_minimum_required(VERSION 3.22)
+project(infrabot_firmware LANGUAGES C)
+set(mbed third_party/STM32CubeH7/Middlewares/Third_Party/mbedTLS)
+add_library(infrabot_sha256 STATIC ${mbed}/library/sha256.c)
+target_include_directories(infrabot_sha256 PRIVATE ${mbed}/include)

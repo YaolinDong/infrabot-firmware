@@ -1,0 +1,5 @@
+Upstream: [Monocypher 4.0.3](https://monocypher.org/download/monocypher-4.0.3.tar.gz).
+
+Archive SHA-512: `40904ada5c7ee4f7741733e38b69a30a4b0561cbffba5ffe7c2dce16136d540251ec0d9056ff606510d3b5b708fb8a40db7e0870d4a0b2dc17ba2bfb880f8965`.
+
+Unmodified source and optional Ed25519 module; the Loader links only verification and its dependencies. See LICENCE.md.

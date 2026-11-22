@@ -1,0 +1,61 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "default",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "toolchainFile": "${sourceDir}/cmake/gcc-arm-none-eabi.cmake",
+            "cacheVariables": {
+                "CMAKE_TRY_COMPILE_TARGET_TYPE": "STATIC_LIBRARY"
+            }
+        },
+        {
+            "name": "Debug",
+            "displayName": "STM32 Debug (A/B)",
+            "description": "STM32H743 ARM GCC debug build",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "FW_NETBOOT": "ON",
+                "FW_STANDALONE": "OFF"
+            }
+        },
+        {
+            "name": "Release",
+            "displayName": "STM32 Release (A/B)",
+            "description": "STM32H743 ARM GCC release build",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "FW_NETBOOT": "ON",
+                "FW_STANDALONE": "OFF"
+            }
+        },
+        {
+            "name": "StandaloneDebug",
+            "displayName": "Standalone Debug (non-A/B boards only)",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "FW_NETBOOT": "OFF",
+                "FW_STANDALONE": "ON"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "Debug",
+            "configurePreset": "Debug"
+        },
+        {
+            "name": "Release",
+            "configurePreset": "Release"
+        },
+        {
+            "name": "StandaloneDebug",
+            "configurePreset": "StandaloneDebug"
+        }
+    ]
+}

@@ -1,0 +1,235 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="infrabot_h7c_urdf">
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0.00089102992694660205 1.6659672933081299e-05 0.0257035406669795" rpy="0 0 0" />
+      <mass value="0.830953007987553" />
+      <inertia ixx="0.00148292129900103" ixy="-5.10875001709794E-10" ixz="-9.12667984173928E-08" iyy="0.000761779838698456" iyz="-1.14928164159428E-08" izz="0.00207969764634392" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_h7c_urdf/meshes/base_link.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_h7c_urdf/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="Link_1">
+    <inertial>
+      <origin xyz="-1.8675967741090798e-05 -0.00032751067036915113 0.037153774557512419" rpy="3.1415853071795867 0 0" />
+      <mass value="0.547245982447441" />
+      <inertia ixx="0.000399162119365506" ixy="-6.77970323100536E-08" ixz="4.52618677761825E-09" iyy="0.000572723782273274" iyz="4.19749046037087E-08" izz="0.000374423756327793" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_h7c_urdf/meshes/Link_1.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_h7c_urdf/meshes/Link_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Joint_1" type="revolute">
+    <origin xyz="0 0 0.066549999999999998" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="Link_1" />
+    <axis xyz="0 0 1" />
+    <limit lower="-2.8" upper="2.8" effort="100" velocity="100" />
+  </joint>
+  <link name="Link_2">
+    <inertial>
+      <origin xyz="-0.044255323773282201 0.00012834673895320664 -0.037308436305521255" rpy="3.1415853071795867 0 0" />
+      <mass value="0.878487181501042" />
+      <inertia ixx="0.000522832387951771" ixy="4.22206047177115E-06" ixz="-5.9808833943538E-08" iyy="0.000722361765971116" iyz="-6.19245017700015E-08" izz="0.00101942857345663" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_h7c_urdf/meshes/Link_2.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_h7c_urdf/meshes/Link_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Joint_2" type="revolute">
+    <origin xyz="0 0.03630054730658084 0.074499733323299122" rpy="-1.5708 0 0" />
+    <parent link="Link_1" />
+    <child link="Link_2" />
+    <axis xyz="0 0 1" />
+    <limit lower="0" upper="3.14" effort="100" velocity="100" />
+  </joint>
+  <link name="Link_3">
+    <inertial>
+      <origin xyz="0.022798757408846831 -0.00026947041582380205 0.069782511587382967" rpy="-3.1415889803725934 -3.6732199999445214e-06 7.3464102065371693e-06" />
+      <mass value="0.334027108783598" />
+      <inertia ixx="0.000179002132491193" ixy="-9.10928552256131E-09" ixz="4.15391374059675E-05" iyy="0.000240537515548361" iyz="1.1947957772961E-08" izz="0.00012590715789794" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_h7c_urdf/meshes/Link_3.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_h7c_urdf/meshes/Link_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Joint_3" type="revolute">
+    <origin xyz="-0.1905 -2.666746905004473e-07 -0.036299999999020449" rpy="1.5707963267828 0 -1.57079632678" />
+    <parent link="Link_2" />
+    <child link="Link_3" />
+    <axis xyz="0 0 1" />
+    <limit lower="-2.8" upper="2.8" effort="100" velocity="100" />
+  </joint>
+  <link name="Link_4">
+    <inertial>
+      <origin xyz="0.059826040213107307 0.035256834315810989 0.033633029448811108" rpy="3.1415889803711941 3.6732171999620533e-06 -1.208470406410494e-11" />
+      <mass value="0.245017296975486" />
+      <inertia ixx="0.000103813611561576" ixy="1.55654879897481E-05" ixz="-6.22152218398054E-09" iyy="7.84367132678648E-05" iyz="2.7139417620016E-08" izz="8.76778658031966E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_h7c_urdf/meshes/Link_4.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_h7c_urdf/meshes/Link_4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Joint_4" type="revolute">
+    <origin xyz="0.039999379227769319 0.033499919184371403 0.10200026998019993" rpy="1.5707963267949 1.5707963267949 0" />
+    <parent link="Link_3" />
+    <child link="Link_4" />
+    <axis xyz="0 0 1" />
+    <limit lower="0" upper="3.14" effort="100" velocity="100" />
+  </joint>
+  <link name="Link_5">
+    <inertial>
+      <origin xyz="-0.00086638077997584794 -2.2166841111587475e-05 0.067453462182819626" rpy="-3.1415853071674937 3.6732335078060174e-06 -3.6732051067580593e-06" />
+      <mass value="0.241682167336675" />
+      <inertia ixx="0.000132118507177433" ixy="-1.19292090123152E-08" ixz="-6.22152241501457E-09" iyy="0.000104283389553235" iyz="2.71394177573127E-08" izz="5.67628207928174E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_h7c_urdf/meshes/Link_5.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_h7c_urdf/meshes/Link_5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Joint_5" type="revolute">
+    <origin xyz="0.10850012351114002 0.040000123510394343 0.033624454526736132" rpy="1.5707963267949 0 1.5707963267679" />
+    <parent link="Link_4" />
+    <child link="Link_5" />
+    <axis xyz="0 0 1" />
+    <limit lower="-2.8" upper="2.8" effort="100" velocity="100" />
+  </joint>
+  <link name="Link_6">
+    <inertial>
+      <origin xyz="-0.070097563470896462 -0.00065379681215574923 -0.028391333650613804" rpy="-3.1415889804116781 -1.4157564010019996e-12 -3.1415853071674937" />
+      <mass value="0.3206611190654" />
+      <inertia ixx="9.7358558475085E-05" ixy="-6.22152241504245E-09" ixz="2.71394176418684E-08" iyy="0.000149704724507772" iyz="-1.15406240966689E-08" izz="0.00010683838480791" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_h7c_urdf/meshes/Link_6.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_h7c_urdf/meshes/Link_6.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Joint_6" type="revolute">
+    <origin xyz="0.028000323241796188 -7.4933609268495639e-07 0.08799989714649338" rpy="0 1.5707963267949 0" />
+    <parent link="Link_5" />
+    <child link="Link_6" />
+    <axis xyz="0 0 1" />
+    <limit lower="-2" upper="2" effort="100" velocity="100" />
+  </joint>
+  <link name="Link_7">
+    <inertial>
+      <origin xyz="0.029634278703299551 -0.0015008341032304515 -0.028375228732798297" rpy="-3.1415853072065785 7.346410106467971e-06 1.4157537084276614e-12" />
+      <mass value="0.146726868433986" />
+      <inertia ixx="4.3181751396128E-05" ixy="-9.91013539098538E-08" ixz="1.22543935263614E-20" iyy="4.03644999681442E-05" iyz="4.68608457088568E-21" izz="4.5958201388479E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_h7c_urdf/meshes/Link_7.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_h7c_urdf/meshes/Link_7.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Joint_7" type="revolute">
+    <origin xyz="-0.096000205696508287 0.027999190516085744 -0.028375102848659885" rpy="1.5707963267949 0 -3.1415926535776" />
+    <parent link="Link_6" />
+    <child link="Link_7" />
+    <axis xyz="0 0 1" />
+    <limit lower="-1.8" upper="1.8" effort="100" velocity="100" />
+  </joint>
+  <link name="Link_flange" />
+  <joint name="Joint_flange" type="fixed">
+    <origin xyz="0.052999791544183016 2.0845369873498519e-07 -0.028375389358204234" rpy="-1.5707853072065781 7.346410106467971e-06 1.415656760742967e-12" />
+    <parent link="Link_7" />
+    <child link="Link_flange" />
+    <axis xyz="0 0 0" />
+  </joint>
+</robot>

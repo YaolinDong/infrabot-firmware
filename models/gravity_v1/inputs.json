@@ -1,0 +1,30 @@
+{
+  "train": [
+    "limit_train"
+  ],
+  "static": [
+    "train_rand50_s0"
+  ],
+  "val": [
+    "limit_val"
+  ],
+  "holdout": [
+    "val_rand20_s100"
+  ],
+  "method": "pc-irls",
+  "static_weight": 1000.0,
+  "prior_weight": 0.1,
+  "lock_inertia": true,
+  "spring": true,
+  "drift_factor": 5.0,
+  "torque_gain": [
+    1.0,
+    1.007,
+    0.999,
+    0.989,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "urdf": "package://infrabot_0927_urdf/urdf/infrabot_0927_urdf.urdf"
+}

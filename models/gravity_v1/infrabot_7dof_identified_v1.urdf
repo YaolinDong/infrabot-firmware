@@ -1,0 +1,236 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="infrabot_0927_urdf">
+  <!-- Identified by dynparam on 2026-10-11 15:36. Source: infrabot_0927_urdf (SDK snapshot e44fff5). Inertia of Link_1, Link_2, Link_3, Link_4, Link_5, Link_6, Link_7 replaced. Method pc-irls, torque calibration 1 1.007 0.999 0.989 1 1 1 applied -->
+  <link name="base_link">
+    <inertial>
+      <origin xyz="-0.00430657294290753 4.03064301077588E-05 0.0259702109749206" rpy="0 0 0" />
+      <mass value="0.82220247699336" />
+      <inertia ixx="0.00145504811871301" ixy="7.19087585458574E-08" ixz="1.11696218359832E-07" iyy="0.000727838318849687" iyz="3.65902940101212E-07" izz="0.00201903733171217" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_0927_urdf/meshes/base_link.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_0927_urdf/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="Link_1">
+    <inertial>
+      <origin xyz="0.009161596361 -0.0001842140556 0.0306513537" rpy="0 0 0" />
+      <mass value="0.3303679318" />
+      <inertia ixx="0.000578494146" ixy="1.308309556e-06" ixz="-0.0001056099451" iyy="0.0004366519394" iyz="1.799546326e-06" izz="0.0005665691895" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_0927_urdf/meshes/Link_1.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_0927_urdf/meshes/Link_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Joint_1" type="revolute">
+    <origin xyz="-0.0065052 0 0.06455" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="Link_1" />
+    <axis xyz="0 0 1" />
+    <limit lower="-2.8" upper="2.8" effort="100" velocity="100" />
+    <dynamics damping="0.1230519023" friction="0.7013491506" />
+  </joint>
+  <link name="Link_2">
+    <inertial>
+      <origin xyz="-0.03945622134 0.01250605856 -0.03163055853" rpy="0 0 0" />
+      <mass value="0.7978368069" />
+      <inertia ixx="0.0005521642631" ixy="-2.696602968e-06" ixz="-8.971845132e-08" iyy="0.0008369796364" iyz="5.101600375e-08" izz="0.001022383854" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_0927_urdf/meshes/Link_2.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_0927_urdf/meshes/Link_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Joint_2" type="revolute">
+    <origin xyz="0.037374 0.0363 0.0685" rpy="-1.5708 0 0" />
+    <parent link="Link_1" />
+    <child link="Link_2" />
+    <axis xyz="0 0 1" />
+    <limit lower="0" upper="3.14" effort="100" velocity="100" />
+    <dynamics damping="0.2955209301" friction="0.3218963131" />
+  </joint>
+  <link name="Link_3">
+    <inertial>
+      <origin xyz="0.04135751621 0.03443738925 0.04919343994" rpy="0 0 0" />
+      <mass value="0.3896137265" />
+      <inertia ixx="0.0002506328442" ixy="9.109285535e-09" ixz="-4.397490924e-05" iyy="0.0002344079275" iyz="-1.194795776e-08" izz="0.0001491434847" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_0927_urdf/meshes/Link_3.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_0927_urdf/meshes/Link_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Joint_3" type="revolute">
+    <origin xyz="-0.193500002707668 0 -0.0363000186886534" rpy="1.57079632678275 0 -1.57079632678005" />
+    <parent link="Link_2" />
+    <child link="Link_3" />
+    <axis xyz="0 0 1" />
+    <limit lower="-2.8" upper="2.8" effort="100" velocity="100" />
+    <dynamics damping="0.485905249" friction="0.383483886" />
+  </joint>
+  <link name="Link_4">
+    <inertial>
+      <origin xyz="0.04354279436 0.0003197858677 -0.04184335792" rpy="0 0 0" />
+      <mass value="0.3064416367" />
+      <inertia ixx="0.0001396602681" ixy="-2.418906375e-05" ixz="-1.192920856e-08" iyy="0.0001463040403" iyz="-2.713941805e-08" izz="0.0001015130695" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_0927_urdf/meshes/Link_4.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_0927_urdf/meshes/Link_4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Joint_4" type="revolute">
+    <origin xyz="0.0391500000000025 -0.0335000000008215 0.10199999999959" rpy="1.5707963267949 1.5707963267949 0" />
+    <parent link="Link_3" />
+    <child link="Link_4" />
+    <axis xyz="0 0 1" />
+    <limit lower="0" upper="3.14" effort="100" velocity="100" />
+    <dynamics damping="0.2483141569" friction="0.5121809908" />
+  </joint>
+  <link name="Link_5">
+    <inertial>
+      <origin xyz="-0.01043472667 -0.004477376644 0.04959712694" rpy="0 0 0" />
+      <mass value="0.3917773711" />
+      <inertia ixx="0.0001420898903" ixy="-1.192920902e-08" ixz="-6.221523174e-09" iyy="0.0001484768481" iyz="2.713941607e-08" izz="7.922986754e-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_0927_urdf/meshes/Link_5.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_0927_urdf/meshes/Link_5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Joint_5" type="revolute">
+    <origin xyz="0.108500000001056 0.0390999999971 -0.0336499999995448" rpy="1.5707963267949 0 1.57079632676787" />
+    <parent link="Link_4" />
+    <child link="Link_5" />
+    <axis xyz="0 0 1" />
+    <limit lower="-2.8" upper="2.8" effort="100" velocity="100" />
+    <dynamics damping="0.01902582856" friction="0.08417231784" />
+  </joint>
+  <link name="Link_6">
+    <inertial>
+      <origin xyz="-0.04638241416 0.006230801607 -0.01969708444" rpy="0 0 0" />
+      <mass value="0.6896351375" />
+      <inertia ixx="0.0001307366153" ixy="6.221522405e-09" ixz="2.713942296e-08" iyy="0.0002161637823" iyz="1.192924653e-08" izz="0.0001806008433" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_0927_urdf/meshes/Link_6.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_0927_urdf/meshes/Link_6.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Joint_6" type="revolute">
+    <origin xyz="0.0280000000010965 0 0.0899999999996593" rpy="0 1.5707963267949 0" />
+    <parent link="Link_5" />
+    <child link="Link_6" />
+    <axis xyz="0 0 1" />
+    <limit lower="-2" upper="2" effort="100" velocity="100" />
+    <dynamics damping="0.1390518366" friction="0.09355298405" />
+  </joint>
+  <link name="Link_7">
+    <inertial>
+      <origin xyz="0.01821404371 -0.0009640522735 -0.01603413433" rpy="0 0 0" />
+      <mass value="0.1607136539" />
+      <inertia ixx="5.163900968e-05" ixy="2.581091502e-16" ixz="1.738450421e-16" iyy="6.903873032e-05" iyz="8.046812999e-21" izz="3.736658829e-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_0927_urdf/meshes/Link_7.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://infrabot_0927_urdf/meshes/Link_7.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Joint_7" type="revolute">
+    <origin xyz="-0.0970000000002801 0.0279999999988189 -0.0287500000000569" rpy="1.5707963267949 0 -3.14159265357762" />
+    <parent link="Link_6" />
+    <child link="Link_7" />
+    <axis xyz="0 0 1" />
+    <limit lower="-1.8" upper="1.8" effort="100" velocity="100" />
+    <dynamics damping="0.140264639" friction="0.0870799501" />
+  </joint>
+</robot>

@@ -73,6 +73,25 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
+    control/control_stats.c
+    control/arm_motion.c
+    control/infrabot_ik_mcu.c
+    control/app_motion.c
+    control/app_control_mode.c
+    control/robot_controller.c
+    control/app_enable.c
+    control/app_arm_power.c
+    control/app_gripper.c
+    control/app_safety.c
+    control/app_impedance.c
+    control/arm_impedance.c
+    control/arm_admittance.c
+    control/arm_admittance_jitter.c
+    control/app_admittance.c
+    control/app_admittance_parameters.c
+    control/app_gravity.c
+    control/app_local_control.c
+    control/arm_gravity.cpp
     third_party/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_ltdc.c
     third_party/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_sdram.c
     third_party/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_fmc.c

@@ -1,0 +1,11 @@
+# dynparam friction, 2026-10-11 15:36, from infrabot_0927_urdf, historical SDK snapshot e44fff5
+# tau_f = viscous*dq + coulomb*sign(dq) + offset + spring*q  [N·m, rad, rad/s]
+friction_model: linear
+joints:
+  Joint_1: {viscous: 0.1230519023, coulomb: 0.7013491506, offset: -0.1360494224, spring: 0.3738262495}
+  Joint_2: {viscous: 0.2955209301, coulomb: 0.3218963131, offset: 1.404295325, spring: -0.8149325881}
+  Joint_3: {viscous: 0.485905249, coulomb: 0.383483886, offset: -0.037364924, spring: -0.01657698472}
+  Joint_4: {viscous: 0.2483141569, coulomb: 0.5121809908, offset: -0.1729163369, spring: 0.05410494271}
+  Joint_5: {viscous: 0.01902582856, coulomb: 0.08417231784, offset: -4.343204109e-05, spring: 0.00271209438}
+  Joint_6: {viscous: 0.1390518366, coulomb: 0.09355298405, offset: 0.002011176036, spring: 0.01581640169}
+  Joint_7: {viscous: 0.140264639, coulomb: 0.0870799501, offset: -0.05377387051, spring: 0.077342935}

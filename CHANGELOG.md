@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 — unreleased
+## 0.1.0 — 2026-11-23
 
 - STM32H743 control for seven H7C joints and an optional gripper, with Ethernet commands, telemetry and local panel operation.
 - Signed A/B firmware updates with touchscreen approval, confirmed trial boot and SWD recovery tools.

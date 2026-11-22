@@ -1,0 +1,4 @@
+# Local editor metadata and private development history are excluded from source releases.
+/.settings export-ignore
+/.clangd export-ignore
+/docs/history export-ignore

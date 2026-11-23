@@ -19,13 +19,19 @@ static void refresh(void){
    else if(fw_app_busy_locked() || !AppTouch_Ready())state=DENY;
  }
 }
-int fw_consent_poll(uint64_t id,uint32_t ip,unsigned op,const uint8_t tag[32]){
+/* Printable ASCII only, so a requester cannot draw control characters. */
+static void keep_version(char out[FW_VERSION_LEN],const char *in){
+ unsigned n=0;
+ if(in)while(n+1U<FW_VERSION_LEN && in[n]>=0x20 && in[n]<0x7f){out[n]=in[n];n++;}
+ memset(out+n,0,FW_VERSION_LEN-n);
+}
+int fw_consent_poll(uint64_t id,uint32_t ip,unsigned op,const uint8_t tag[32],const char *version){
  int result=FW_BUSY;
  platform_enter_critical();
  refresh();
  if(id && (id!=prompt.id || state==NONE)){
    if(state!=ASK && state!=ALLOW && !fw_app_busy_locked() && AppTouch_Ready()){
-     prompt.id=id;prompt.ip=ip;prompt.op=op;memcpy(prompt.tag,tag,32);
+     prompt.id=id;prompt.ip=ip;prompt.op=op;memcpy(prompt.tag,tag,32);keep_version(prompt.version,version);
      start=HAL_GetTick();state=ASK;
    }
  }

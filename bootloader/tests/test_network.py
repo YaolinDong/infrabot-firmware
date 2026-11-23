@@ -21,8 +21,12 @@ from firmware_signing import generate
 from netboot_swd import A,B,unpack
 
 
-def image(base,fill):
-    return struct.pack("<II",0x20020000,base+9)+bytes([fill])*32799
+def image(base,fill,version=b''):
+    body=struct.pack("<II",0x20020000,base+9)+bytes([fill])*32799
+    if version:  # the record app_info.c keeps in real images
+        record=b'IBFWVER1'+version+b'\0'
+        body=body[:1024]+record+body[1024+len(record):]
+    return body
 
 
 def main():
@@ -32,7 +36,7 @@ def main():
         tmp=Path(folder);secret=tmp/'seed';pub=generate(secret);keyfile=tmp/'public';keyfile.write_text(pub.hex())
         loader=bytearray(image(0x08000000,19));loader[0x400:0x424]=b'FAG2'+pub
         old,factory=pack(bytes(loader),image(0x08020400,11),image(0x08100400,12),secret)
-        new,_=pack(bytes(loader),image(0x08020400,21),image(0x08100400,22),secret)
+        new,_=pack(bytes(loader),image(0x08020400,21,b'v0.2.0'),image(0x08100400,22,b'v0.2.0'),secret)
         small,_=pack(bytes(loader),image(0x08020400,41)[:448],image(0x08100400,42)[:448],secret)
         for slot,blob in unpack(small,pub).items():(tmp/str(slot)).write_bytes(blob)
         (tmp/'factory').write_bytes(factory)
@@ -79,7 +83,7 @@ def main():
                     corrupt=tmp/'bad.ifw';corrupt.write_bytes(new[:-1]+bytes([new[-1]^1]))
                     assert 'signature' in run('127.0.0.1',corrupt,keyfile,ok=False)
                     assert probe()==old_id
-                    run('127.0.0.1',pkg,keyfile)
+                    assert '新固件版本：v0.2.0' in run('127.0.0.1',pkg,keyfile)
                     assert 'confirmed B' in probe()
                     run('127.0.0.1',pkg,keyfile) # same release is idempotent
                     run('--rollback','127.0.0.1',keyfile);assert probe()==old_id

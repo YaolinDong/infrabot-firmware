@@ -15,6 +15,25 @@ static void UpdateButton(unsigned x,unsigned y,unsigned w,int allow,int rollback
   SCB_CleanDCache_by_Addr((void*)buf,96*24*2);
   AppLcd_Blit(buf,96,x+(w-96)/2,y+14,96,24);
 }
+/* "v0.1.0 -> v0.2.0": the running version, an arrow, the requester's.  The new
+ * version is reported by the requester and unsigned; the image tag identifies
+ * the image.  An older SDK sends no version: "?" then. */
+static void UpdateVersions(unsigned x,unsigned y,unsigned width,const char *next){
+  enum {ARROW_W=40U, GAP=12U};
+  const char *shown=next[0]?next:"?";
+  const unsigned room=(width-ARROW_W-2U*GAP)/2U;
+  /* 24 px text (12 px advance) while both fit in half the row, else 16 px. */
+  const uint8_t size=(strlen(APP_FIRMWARE_VERSION)*12U<=room && strlen(shown)*12U<=room)?24U:16U;
+  const unsigned advance=size/2U, chars=room/advance;
+  char now[FW_VERSION_LEN],to[FW_VERSION_LEN];
+  snprintf(now,sizeof(now),"%.*s",(int)chars,APP_FIRMWARE_VERSION);
+  snprintf(to,sizeof(to),"%.*s",(int)chars,shown);
+  AppLcd_DrawText(x,y,now,size,UI_TEXT,UI_BG);
+  const unsigned ax=x+(unsigned)strlen(now)*advance+GAP, ay=y+size/2U;
+  AppLcd_FillRect(ax,ay-1U,ARROW_W-8U,3,UI_HEADER);
+  for(unsigned i=0;i<8U;i++)AppLcd_FillRect(ax+ARROW_W-8U+i,ay-7U+i,1,15U-2U*i,UI_HEADER);
+  AppLcd_DrawText(ax+ARROW_W+GAP,y,to,size,next[0]?UI_GREEN:UI_DIM,UI_BG);
+}
 static int UpdateModal(uint8_t was_touched,uint8_t *redraw){
   static uint64_t displayed;
   static uint8_t await_lift;
@@ -35,8 +54,9 @@ static int UpdateModal(uint8_t was_touched,uint8_t *redraw){
     snprintf(msg,sizeof(msg),"From %u.%u.%u.%u",ip[0],ip[1],ip[2],ip[3]);
     AppLcd_DrawText(x,y-64,msg,16,UI_TEXT,UI_BG);
     if(p.op==FW_ENTER){
+      UpdateVersions(x,y-40,w-x-8U,p.version);
       snprintf(msg,sizeof(msg),"Image %02x%02x%02x%02x",p.tag[0],p.tag[1],p.tag[2],p.tag[3]);
-      AppLcd_DrawText(x,y-40,msg,16,UI_TEXT,UI_BG);
+      AppLcd_DrawText(x+200,y-64,msg,16,UI_DIM,UI_BG);
     }
     UpdateButton(x,y,bw,0,p.op==FW_REVERT);UpdateButton(x+180,y,bw,1,p.op==FW_REVERT);
     return 1;

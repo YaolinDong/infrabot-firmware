@@ -4,6 +4,7 @@
 #include "consent.h"
 #include <assert.h>
 #include <stdint.h>
+#include <string.h>
 static uint32_t time_ms;
 static int busy,touch=1;
 uint32_t HAL_GetTick(void){return time_ms;}
@@ -12,19 +13,28 @@ int fw_app_busy_locked(void){return busy;}
 int main(void){
  uint8_t a[32]={1},b[32]={2};FwPrompt q;
  time_ms=UINT32_MAX-100;
- assert(fw_consent_poll(1,3,FW_ENTER,a)==FW_PENDING);
+ assert(fw_consent_poll(1,3,FW_ENTER,a,"")==FW_PENDING);
  assert(fw_consent_view(&q) && q.id==1);
  fw_consent_decide(2,1);
- assert(fw_consent_poll(2,3,FW_ENTER,a)==FW_BUSY);
- assert(fw_consent_poll(1,3,FW_ENTER,b)==FW_BUSY);
- fw_consent_decide(1,0);assert(fw_consent_poll(1,3,FW_ENTER,a)==FW_DENIED);
- assert(fw_consent_poll(2,3,FW_ENTER,b)==FW_PENDING);
- time_ms+=60000;fw_consent_decide(2,1);assert(fw_consent_poll(2,3,FW_ENTER,b)==FW_EXPIRED);
+ assert(fw_consent_poll(2,3,FW_ENTER,a,"")==FW_BUSY);
+ assert(fw_consent_poll(1,3,FW_ENTER,b,"")==FW_BUSY);
+ fw_consent_decide(1,0);assert(fw_consent_poll(1,3,FW_ENTER,a,"")==FW_DENIED);
+ assert(fw_consent_poll(2,3,FW_ENTER,b,"")==FW_PENDING);
+ time_ms+=60000;fw_consent_decide(2,1);assert(fw_consent_poll(2,3,FW_ENTER,b,"")==FW_EXPIRED);
  assert(!fw_consent_view(&q));
- assert(fw_consent_poll(3,3,FW_ENTER,a)==FW_PENDING);fw_consent_decide(3,1);
- busy=1;assert(fw_consent_poll(3,3,FW_ENTER,a)==FW_DENIED);
- busy=0;touch=0;assert(fw_consent_poll(4,3,FW_ENTER,a)==FW_BUSY);
- touch=1;assert(fw_consent_poll(4,3,FW_ENTER,a)==FW_PENDING);fw_consent_decide(4,1);
- assert(fw_consent_poll(4,4,FW_ENTER,a)==FW_BUSY && fw_consent_poll(4,3,FW_REVERT,a)==FW_BUSY);
- assert(fw_consent_poll(4,3,FW_ENTER,a)==FW_OK && fw_consent_poll(4,3,FW_ENTER,a)==FW_DENIED);
+ assert(fw_consent_poll(3,3,FW_ENTER,a,"")==FW_PENDING);fw_consent_decide(3,1);
+ busy=1;assert(fw_consent_poll(3,3,FW_ENTER,a,"")==FW_DENIED);
+ busy=0;touch=0;assert(fw_consent_poll(4,3,FW_ENTER,a,"")==FW_BUSY);
+ touch=1;assert(fw_consent_poll(4,3,FW_ENTER,a,"")==FW_PENDING);fw_consent_decide(4,1);
+ assert(fw_consent_poll(4,4,FW_ENTER,a,"")==FW_BUSY && fw_consent_poll(4,3,FW_REVERT,a,"")==FW_BUSY);
+ assert(fw_consent_poll(4,3,FW_ENTER,a,"")==FW_OK && fw_consent_poll(4,3,FW_ENTER,a,"")==FW_DENIED);
+ /* The requester's version is kept for display: printable ASCII, NUL-terminated, truncated. */
+ assert(fw_consent_poll(5,3,FW_ENTER,a,"v0.2.0")==FW_PENDING && fw_consent_view(&q));
+ assert(!strcmp(q.version,"v0.2.0"));fw_consent_decide(5,0);
+ assert(fw_consent_poll(6,3,FW_ENTER,a,"v1\n\x1b[2J")==FW_PENDING && fw_consent_view(&q));
+ assert(!strcmp(q.version,"v1"));fw_consent_decide(6,0);
+ assert(fw_consent_poll(7,3,FW_ENTER,a,"v1234567890123456789012345")==FW_PENDING && fw_consent_view(&q));
+ assert(strlen(q.version)==FW_VERSION_LEN-1U && !memcmp(q.version,"v1234567890123456789012",FW_VERSION_LEN-1U));
+ fw_consent_decide(7,0);
+ assert(fw_consent_poll(8,3,FW_ENTER,a,0)==FW_PENDING && fw_consent_view(&q) && !q.version[0]);
 }

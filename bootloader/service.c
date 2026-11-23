@@ -102,9 +102,11 @@ static void receive(void *arg,struct udp_pcb *listener,struct pbuf *p,const ip_a
    }
    offset=cursor;
 #else
-   if(!h.offset && !fw_is_trial() && ((h.op==FW_ENTER && len==32)||(h.op==FW_REVERT && !len))){
+   if(!h.offset && !fw_is_trial() && ((h.op==FW_ENTER && len>=32 && len<32U+FW_VERSION_LEN)||(h.op==FW_REVERT && !len))){
      const uint8_t empty[32]={0};const uint8_t *tag=len?body:empty;
-     status=fw_consent_poll(session,addr,h.op,tag);
+     char version[FW_VERSION_LEN]={0};
+     if(len>32)memcpy(version,body+32,len-32);
+     status=fw_consent_poll(session,addr,h.op,tag,version);
      if(status==FW_OK){
        FW_TICKET->ip=addr;FW_TICKET->port=port;memcpy((void*)FW_TICKET->tag,tag,32);
        FW_TICKET->cookie=session;

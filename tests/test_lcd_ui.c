@@ -47,17 +47,28 @@ void AppLcd_Blit(const uint16_t *src,uint16_t pitch,uint16_t x,uint16_t y,uint16
   assert(x+w<=TEST_PHYSICAL_W && y+h<=TEST_PHYSICAL_H);
   for(unsigned j=0;j<h;j++)memcpy(&pixels[y+j][x],src+j*pitch,w*2U);
 }
-static void check_update_prompt(void){
+static void save(const char *dir,const char *name);
+static void check_update_prompt(const char *dir){
  uint8_t redraw=0;
  for(unsigned allow=0;allow<2;allow++){
-   test_request=(FwPrompt){.id=allow+1,.op=allow?FW_ENTER:FW_REVERT};
+   test_request=(FwPrompt){.id=allow+1,.op=allow?FW_ENTER:FW_REVERT,.version="v0.2.0"};
    choice=0;ui_touch.points=1;ui_touch.touched=1;
    ui_touch.x=TEST_PHYSICAL_W/2+(allow?80:-80);ui_touch.y=TEST_PHYSICAL_H/2+40;
    assert(UpdateModal(0,&redraw) && UpdateModal(1,&redraw) && !choice);
+   if(allow)save(dir,"update-prompt");
    ui_touch.touched=0;assert(UpdateModal(1,&redraw));
    ui_touch.touched=1;assert(UpdateModal(0,&redraw) && choice==allow+1);
    assert(UpdateModal(1,&redraw)); /* operator's finger is still down */
    ui_touch.touched=0;assert(!UpdateModal(1,&redraw) && redraw);
+ }
+ /* The longest reported version and no version (an older SDK) stay on screen. */
+ static const char *const versions[]={"v12.345.6789-123-gabcdef","",};
+ for(unsigned i=0;i<2;i++){
+   test_request=(FwPrompt){.id=10+i,.op=FW_ENTER};
+   snprintf(test_request.version,sizeof(test_request.version),"%s",versions[i]);
+   ui_touch.touched=0;assert(UpdateModal(0,&redraw));
+   save(dir,i?"update-prompt-noversion":"update-prompt-long");
+   fw_consent_decide(test_request.id,0);assert(!UpdateModal(0,&redraw));
  }
 }
 #endif
@@ -391,10 +402,10 @@ static void test_info(const char *dir) {
   tap_action(UI_ACT_TAB_STATUS);assert(ui_page==UI_PAGE_STATUS);
 }
 int main(int argc,char **argv) {
-#ifdef FW_NETBOOT_APP
-  check_update_prompt();
-#endif
   const char *dir=argc>1 ? argv[1] : NULL;
+#ifdef FW_NETBOOT_APP
+  check_update_prompt(dir);
+#endif
   dm_motor_runtime.control_enabled=1;
   for(unsigned i=0;i<7;++i) {
     dm_motor_runtime.enabled[i]=1; dm_motors[i].feedback_count=1;
@@ -990,10 +1001,10 @@ static void test_table(void) {
 }
 
 int main(int argc,char **argv) {
-#ifdef FW_NETBOOT_APP
-  check_update_prompt();
-#endif
   const char *dir=argc>1?argv[1]:NULL;
+#ifdef FW_NETBOOT_APP
+  check_update_prompt(dir);
+#endif
   dm_motor_runtime.control_enabled=1;
   for(unsigned i=0;i<7;++i) {dm_motor_runtime.enabled[i]=1;dm_motors[i].feedback_count=1;
     dm_motors[i].temperature_mos=39;dm_motors[i].state=1;

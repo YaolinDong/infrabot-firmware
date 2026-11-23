@@ -9,6 +9,11 @@
 #include "eth_state.h"
 #include "robot_controller.h"
 
+/* The SDK updater reads the version of a signed image from this record:
+ * "IBFWVER1", then the version, NUL-terminated.  Referenced below, so the
+ * linker keeps it. */
+const char app_firmware_version_record[] = "IBFWVER1" APP_FIRMWARE_VERSION;
+
 static void copy_label(char *out, size_t capacity, const char *label)
 {
   const size_t n = strlen(label);
@@ -55,7 +60,7 @@ uint16_t AppInfo_Reply(const InfrabotInfoRequest *request, InfrabotInfoReplyV2 *
 
   reply->protocol_major = INFRABOT_PROTOCOL_MAJOR;
   reply->protocol_minor = INFRABOT_PROTOCOL_MINOR;
-  copy_label(reply->firmware_version, sizeof(reply->firmware_version), APP_FIRMWARE_VERSION);
+  copy_label(reply->firmware_version, sizeof(reply->firmware_version), app_firmware_version_record + 8);
   copy_label(reply->board, sizeof(reply->board), "fire-h743-v2");
   copy_label(reply->arm_model, sizeof(reply->arm_model), ArmGravity_ModelName());
   reply->crc32 = infrabot_crc32(reply, offsetof(InfrabotInfoReplyV2, crc32));

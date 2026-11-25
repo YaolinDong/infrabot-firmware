@@ -208,6 +208,8 @@ drivers/display/app_touch.c
 drivers/display/app_touch.h
 drivers/net/app_ethernet.c
 drivers/net/app_ethernet.h
+drivers/net/app_diag.c
+drivers/net/app_diag.h
 drivers/net/app_info.c
 drivers/net/app_info.h
 drivers/net/app_param.c
@@ -271,6 +273,7 @@ tests/test_app_gravity.c
 tests/test_app_impedance.c
 tests/test_app_log.c
 tests/test_app_motion.c
+tests/test_app_diag.c
 tests/test_app_param.c
 tests/test_arm_motion.c
 tests/test_arm_power.c

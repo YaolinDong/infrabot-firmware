@@ -43,6 +43,12 @@ PB5 在底板上也接摄像头接口，PB6 也是 I2C1 SCL（EEPROM、WM8978、
 
 写入不会让增益阶跃：控制任务按该参数的速率把已生效值滑向请求值，范围和速率与触摸屏滑条相同。数值只在 RAM 中，重启后恢复默认。INFO 和 GET 任何 PC 都可以发；SET 只接受控制机械臂的 PC（或当前没有控制方），否则应答 BUSY。值不是有限数或超出范围时应答 RANGE，不改变任何值。参数表在 `drivers/net/app_param.c`，主机测试是 `tests/test_app_param.c`。能力位为 `INFRABOT_CAP_PARAMETERS`（0x4000）。
 
+## 诊断查询（DMDR / DMDA）
+
+DMDR（16 字节）只带请求 ID；板子把 DMDA（108 字节）发回请求方并回显该 ID。DMDA 包含状态任务最近一秒的统计（控制周期数、丢周期、最长控制周期、CAN 发送/接收帧数、CAN 发送失败、收到和拒绝的命令报文、遥测包数）、上电以来的累计值、CAN 错误计数与 error-passive/bus-off 标志、FreeRTOS 堆当前剩余和历史最低、控制/状态/以太网三个任务历史最少剩余栈，以及 J1–J8 驱动状态、控制器状态和最近一次拒绝命令的原因。字段布局见 `protocol/infrabot/protocol.h` 的 `InfrabotDiagReply`。
+
+诊断查询只读，任何 PC 都可以发，不检查也不占用控制权。数据取自状态任务每秒更新的快照（LCD 用的同一份），控制回路里没有新增计数。版本、CRC 不对或保留字段非 0 的请求不应答。打包在 `drivers/net/app_diag.c`，主机测试是 `tests/test_app_diag.c`。能力位为 `INFRABOT_CAP_DIAGNOSTICS`（0x8000）。
+
 ## 以太网关节角度遥测
 
 当前工程已加入野火挑战者板载 LAN8720A 的 RMII 网卡和 LwIP UDP 遥测，和 FDCAN

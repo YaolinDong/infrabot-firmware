@@ -96,6 +96,14 @@ void AppTasks_GetStatusSnapshot(AppTasksStatusSnapshot *snapshot)
   taskEXIT_CRITICAL();
 }
 
+/* Least free stack a task has had, in bytes; zero for a task that does not
+ * exist (yet).  uxTaskGetStackHighWaterMark(NULL) would measure the caller. */
+static uint32_t AppTasks_StackFree(TaskHandle_t task)
+{
+  if (task == NULL) return 0U;
+  return (uint32_t)uxTaskGetStackHighWaterMark(task) * (uint32_t)sizeof(StackType_t);
+}
+
 /* Counters in a 16-bit telemetry field saturate. */
 static uint16_t AppTasks_U16(uint32_t value)
 {
@@ -756,6 +764,7 @@ static void AppTasks_StatusTask(void *argument)
   uint32_t status_seconds = 0U;
   uint32_t previous_rx_frames = 0U, previous_uart_hal_errors = 0U, previous_can_state = 0U;
   uint32_t previous_can_events = 0U;
+  uint32_t missed_total = 0U, can_tx_errors_total = 0U, command_invalid_total = 0U;
   uint8_t motor_state[DM_MOTOR_COUNT] = {0};
 
   for (;;)
@@ -943,6 +952,17 @@ static void AppTasks_StatusTask(void *argument)
       snapshot.can_error_passive = (uint8_t)protocol.ErrorPassive;
       snapshot.can_bus_off = (uint8_t)protocol.BusOff;
       snapshot.can_error_events = error_events;
+      missed_total += missed;
+      can_tx_errors_total += mit_err;
+      command_invalid_total += udp_cmd_invalid;
+      snapshot.control_missed_total = missed_total;
+      snapshot.can_tx_errors_total = can_tx_errors_total;
+      snapshot.command_invalid_total = command_invalid_total;
+      snapshot.heap_free_bytes = (uint32_t)xPortGetFreeHeapSize();
+      snapshot.heap_min_free_bytes = (uint32_t)xPortGetMinimumEverFreeHeapSize();
+      snapshot.stack_free_control_bytes = AppTasks_StackFree(dm_control_task_handle);
+      snapshot.stack_free_status_bytes = AppTasks_StackFree(xTaskGetCurrentTaskHandle());
+      snapshot.stack_free_ethernet_bytes = AppTasks_StackFree(dm_ethernet_task_handle);
       taskENTER_CRITICAL();
       app_status_snapshot = snapshot;
       taskEXIT_CRITICAL();

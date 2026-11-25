@@ -28,6 +28,16 @@ typedef struct
   uint8_t can_rec;
   uint8_t can_error_passive;
   uint8_t can_bus_off;
+  /* Since boot. */
+  uint32_t control_missed_total;
+  uint32_t can_tx_errors_total;
+  uint32_t command_invalid_total;
+  /* Memory, measured by the status task once a second. */
+  uint32_t heap_free_bytes;
+  uint32_t heap_min_free_bytes;
+  uint32_t stack_free_control_bytes; /* least free stack ever, per task */
+  uint32_t stack_free_status_bytes;
+  uint32_t stack_free_ethernet_bytes;
 } AppTasksStatusSnapshot;
 
 /* Application task layer.  Board bring-up remains in main.c; this module owns

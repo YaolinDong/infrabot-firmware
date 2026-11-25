@@ -6,6 +6,7 @@
 #include "app_ethernet.h"
 #include "app_info.h"
 #include "app_param.h"
+#include "app_diag.h"
 #ifdef FW_NETBOOT_APP
 #include "update.h"
 #endif
@@ -158,6 +159,59 @@ static uint8_t AppEthernet_ParamWriteAllowed(const ip_addr_t *addr, uint16_t por
       (HAL_GetTick() - control_owner_last_tick) > (DM_ETH_COMMAND_TIMEOUT_MS * 5U);
   if (!control_owner_valid || arm_idle || owner_quiet) return 1U;
   return (control_owner_ip == ip && control_owner_port == port) ? 1U : 0U;
+}
+
+/* Diagnostic snapshot: one DMDR in, one DMDA out from the command port.
+ * Read-only and open to any PC; it never touches control ownership. */
+static uint8_t AppEthernet_TryDiag(struct pbuf *p, const ip_addr_t *addr, uint16_t port)
+{
+  InfrabotDiagRequest request;
+  if (p->tot_len != sizeof(request) ||
+      pbuf_copy_partial(p, &request, sizeof(request), 0U) != sizeof(request)) return 0U;
+  AppTasksStatusSnapshot stat;
+  AppTasks_GetStatusSnapshot(&stat);
+  InfrabotDiagReply body;
+  memset(&body, 0, sizeof(body));
+  body.uptime_ms = (uint32_t)(xTaskGetTickCount() * portTICK_PERIOD_MS);
+  body.snapshot_seconds = stat.seconds;
+  body.control_hz = stat.control_hz;
+  body.control_missed = stat.control_missed;
+  body.control_period_max_us = stat.period_max_us;
+  body.can_tx = stat.can_tx;
+  body.can_rx = stat.can_rx;
+  body.can_tx_errors = stat.can_tx_errors;
+  body.command_rx = stat.command_rx;
+  body.command_invalid = stat.command_invalid;
+  body.telemetry_tx = stat.telemetry_tx;
+  body.can_error_events = stat.can_error_events;
+  body.control_missed_total = stat.control_missed_total;
+  body.can_tx_errors_total = stat.can_tx_errors_total;
+  body.command_invalid_total = stat.command_invalid_total;
+  body.can_tec = stat.can_tec;
+  body.can_rec = stat.can_rec;
+  body.can_error_passive = stat.can_error_passive;
+  body.can_bus_off = stat.can_bus_off;
+  body.heap_free_bytes = stat.heap_free_bytes;
+  body.heap_min_free_bytes = stat.heap_min_free_bytes;
+  body.stack_free_control_bytes = (uint16_t)(stat.stack_free_control_bytes > 0xFFFFU ? 0xFFFFU : stat.stack_free_control_bytes);
+  body.stack_free_status_bytes = (uint16_t)(stat.stack_free_status_bytes > 0xFFFFU ? 0xFFFFU : stat.stack_free_status_bytes);
+  body.stack_free_ethernet_bytes = (uint16_t)(stat.stack_free_ethernet_bytes > 0xFFFFU ? 0xFFFFU : stat.stack_free_ethernet_bytes);
+  for (uint8_t i = 0U; i < DM_MOTOR_COUNT && i < sizeof(body.drive_state); ++i)
+    body.drive_state[i] = dm_motors[i].state;
+  body.controller_status = RobotController_OperationalStatus();
+  body.invalid_reason = eth_udp_command.invalid_reason;
+  InfrabotDiagReply reply;
+  const uint16_t length = AppDiag_Reply(&request, &body, &reply);
+  if (length == 0U) return 0U;
+  if (addr != NULL && command_pcb != NULL) {
+    struct pbuf *out = pbuf_alloc(PBUF_TRANSPORT, length, PBUF_RAM);
+    if (out != NULL) {
+      memcpy(out->payload, &reply, length);
+      (void)udp_sendto(command_pcb, out, addr, port);
+      pbuf_free(out);
+    }
+  }
+  return 1U;
 }
 
 /* Parameter service: one DMPR in, one DMPA out from the command port. */
@@ -814,7 +868,8 @@ static void AppEthernet_CommandReceive(void *arg, struct udp_pcb *pcb, struct pb
   }
   if (p != NULL)
   {
-    if (AppEthernet_TryInfo(p, addr, port) || AppEthernet_TryParam(p, addr, port))
+    if (AppEthernet_TryInfo(p, addr, port) || AppEthernet_TryParam(p, addr, port) ||
+        AppEthernet_TryDiag(p, addr, port))
     {
       pbuf_free(p);
       return;

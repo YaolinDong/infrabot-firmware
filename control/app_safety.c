@@ -290,6 +290,21 @@ static void brake(uint32_t now)
   printf("STOP: holding, no PC (stays enabled)\r\n");
 }
 
+/* The command speed starts over whenever a joint is (re)enabled.  The enable
+ * rebases its command to where the joint now is, after it moved while
+ * disabled; a window still holding the commands from before the disable
+ * reads that step as speed (a step under 2 * VMAX * 1 ms is not discarded),
+ * and a stop in the next 10 ms brakes the command along it for up to
+ * v * 0.25 s: a rebase of about 55 mrad on J5 read as about 5.5 rad/s, and
+ * the arm moved J5 by 1.0 rad and J6 by 0.9 rad from rest. */
+static uint8_t windowed_mask;
+static void forget_velocity(uint8_t i)
+{
+  ArmDriveLead_Reset(&window[i], command_q(i));
+  velocity[i] = 0.0f;
+  windowed_mask &= (uint8_t)~(1U << i);
+}
+
 /* Stopped with no PC: hold, however long, until one is back.  Never
  * disables; only a DISABLE from a PC removes power. */
 static void hold(uint32_t now)
@@ -315,12 +330,27 @@ void AppSafety_Tick(void)
     /* Disabled (a DISABLE from a PC): the stop is over. */
     if (AppSafety_Stopping()) phase = INFRABOT_STOP_PHASE_NONE;
     torque_mask = fault_latched = lost_latched = 0U;
-    for (uint8_t i = 0U; i < ARM; ++i) torque_ticks[i] = 0U;
+    for (uint8_t i = 0U; i < ARM; ++i)
+    {
+      torque_ticks[i] = 0U;
+      forget_velocity(i);
+    }
     return;
   }
   if (eth_udp_command.control_request != DM_ETH_CMD_DISABLE) supervise(now);
   if (phase == INFRABOT_STOP_PHASE_BRAKING) brake(now);
   else if (phase == INFRABOT_STOP_PHASE_HOLDING) hold(now);
   for (uint8_t i = 0U; i < ARM; ++i)
+  {
+    const uint8_t bit = (uint8_t)(1U << i);
+    if (!dm_motor_runtime.enabled[i] || !(windowed_mask & bit))
+    {
+      /* Disabled, or the first tick since its enable: no speed yet, and
+       * the window starts at the command the enable set. */
+      forget_velocity(i);
+      if (dm_motor_runtime.enabled[i]) windowed_mask |= bit;
+      continue;
+    }
     velocity[i] = ArmDriveLead_Velocity(&window[i], command_q(i), dm_motors[i].velocity_max, DT);
+  }
 }

@@ -437,8 +437,43 @@ static void test_can_fault_holds(void)
   assert(s.stop_phase == INFRABOT_STOP_PHASE_HOLDING && still_enabled());
 }
 
+/* The arm is disabled, moves while unpowered (sags, or a hand puts it
+ * somewhere), is enabled again with its commands rebased to where it now is,
+ * and a STOP arrives at once (the PC's mode switch was refused).  The brake
+ * must start from rest: the speed windows must not read the rebase as the
+ * command moving at step / 10 ms (on the arm, J5 driven 1 rad, J6 0.9 rad). */
+static void test_enable_forgets_speed(void)
+{
+  for (unsigned delay = 0; delay < 3; ++delay) {
+    reset();
+    dm_motor_runtime.control_enabled = 0;
+    for (unsigned i = 0; i < 8; ++i) dm_motor_runtime.enabled[i] = 0;
+    for (unsigned k = 0; k < 5; ++k) step();
+    /* Smaller than 2 * VMAX * 1 ms, so the window keeps it as motion. */
+    float q0[7];
+    for (unsigned i = 0; i < 7; ++i) {
+      q0[i] = joint((uint8_t)i) + ((i & 1U) ? 0.015f : -0.015f);
+      command((uint8_t)i, q0[i]);
+      measure((uint8_t)i, q0[i]);
+    }
+    for (unsigned i = 0; i < 8; ++i) dm_motor_runtime.enabled[i] = 1;
+    dm_motor_runtime.control_enabled = 1;
+    for (unsigned k = 0; k < delay; ++k) step();
+    begin_tick();
+    AppSafety_RequestStop(INFRABOT_STOP_REQUESTED);
+    AppSafety_Tick();
+    unsigned n = 0;
+    while (AppSafety_Braking()) { step(); assert(++n < 2000); }
+    for (unsigned i = 0; i < 7; ++i) {
+      assert(fabsf(joint((uint8_t)i) - q0[i]) < 1e-4f);
+      assert(fabsf(eth_udp_command.target_velocity[i]) < 1e-6f);
+    }
+  }
+}
+
 int main(void)
 {
+  test_enable_forgets_speed();
   test_synchronized_brake_and_hold();
   test_pc_back();
   test_stop_mode();
@@ -451,6 +486,6 @@ int main(void)
   test_can_fault_holds();
   puts("safety: synchronized brake, 10 min hold without a PC (never disabled), PC back, stop mode, repeated stop, "
        "brake cap, joint limit, command jump, blocked joint, v4 stop, torque supervisor, drive fault, "
-       "feedback lost, CAN fault holds, disable passed");
+       "feedback lost, CAN fault holds, disable, re-enable brakes from rest passed");
   return 0;
 }

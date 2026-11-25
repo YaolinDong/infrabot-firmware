@@ -125,6 +125,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     third_party/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_fmc.c
     drivers/net/ethernetif.c
     drivers/net/app_info.c
+    drivers/net/app_param.c
     drivers/net/app_ethernet.c
     app/freertos_heap.c
     app/lwip_heap.c

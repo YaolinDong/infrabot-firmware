@@ -210,6 +210,8 @@ drivers/net/app_ethernet.c
 drivers/net/app_ethernet.h
 drivers/net/app_info.c
 drivers/net/app_info.h
+drivers/net/app_param.c
+drivers/net/app_param.h
 drivers/net/eth_state.c
 drivers/net/eth_state.h
 drivers/net/ethernetif.c
@@ -269,6 +271,7 @@ tests/test_app_gravity.c
 tests/test_app_impedance.c
 tests/test_app_log.c
 tests/test_app_motion.c
+tests/test_app_param.c
 tests/test_arm_motion.c
 tests/test_arm_power.c
 tests/test_cartesian_speed_cap.c

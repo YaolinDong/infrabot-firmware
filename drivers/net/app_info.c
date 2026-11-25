@@ -54,7 +54,7 @@ uint16_t AppInfo_Reply(const InfrabotInfoRequest *request, InfrabotInfoReplyV2 *
                           INFRABOT_CAP_GROUPS | INFRABOT_CAP_TELEMETRY_V3 |
                           INFRABOT_CAP_CONTROLLED_STOP | INFRABOT_CAP_SELFCHECK |
                           INFRABOT_CAP_RESUME | INFRABOT_CAP_LOCAL_GRAVITY | INFRABOT_CAP_ADMITTANCE |
-                          INFRABOT_CAP_RUN_LOG;
+                          INFRABOT_CAP_RUN_LOG | INFRABOT_CAP_PARAMETERS;
   info->crc32 = infrabot_crc32(info, offsetof(InfrabotInfoReply, crc32));
   if (request->version == INFRABOT_INFO_V1) return sizeof(*info);
 

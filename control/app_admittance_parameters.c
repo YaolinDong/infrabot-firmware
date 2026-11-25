@@ -14,6 +14,9 @@ static const float high[]={40,3,400,15,10,2,2,.9f,1,10,5,300};
 static const float rate[]={20,1,100,5,2,1,.5f,.3f,.5f,5,2,100};
 float AppAdmittance_ParameterMin(uint8_t i){return i<APP_ADM_PARAMETERS?low[i]:0;}
 float AppAdmittance_ParameterMax(uint8_t i){return i<APP_ADM_PARAMETERS?high[i]:0;}
+static const float initial_value[APP_ADM_PARAMETERS]=ADM_INITIAL;
+float AppAdmittance_ParameterRate(uint8_t i){return i<APP_ADM_PARAMETERS?rate[i]:0;}
+float AppAdmittance_ParameterDefault(uint8_t i){return i<APP_ADM_PARAMETERS?initial_value[i]:0;}
 uint8_t AppAdmittance_SetParameter(uint8_t i,float v){
   if(i>=APP_ADM_PARAMETERS||!isfinite(v)||v<low[i]||v>high[i])return 0;
   platform_enter_critical();parameters.requested[i]=v;platform_exit_critical();return 1;

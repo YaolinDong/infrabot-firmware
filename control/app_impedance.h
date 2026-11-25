@@ -17,6 +17,8 @@ uint8_t AppImpedance_SetParameter(uint8_t index,float value);
 void AppImpedance_GetParameters(AppImpedanceParameters *out);
 float AppImpedance_ParameterMin(uint8_t index);
 float AppImpedance_ParameterMax(uint8_t index);
+float AppImpedance_ParameterRate(uint8_t index); /* largest change of the applied value, units per second */
+float AppImpedance_ParameterDefault(uint8_t index);
 /* Control-task only. Bound/slew changes, including while modes are inactive. */
 void AppImpedance_Tick(float dt,ArmImpedanceGains *gains);
 #endif

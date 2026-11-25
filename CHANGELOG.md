@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.0 — unreleased
+
+- Parameter service (protocol 1.1, capability `INFRABOT_CAP_PARAMETERS`): DMPR and DMPA on the command port list, read and write the gravity, impedance and admittance parameters by id, with name, unit, range, default and slew rate. Writes use the touchscreen limits and slew and live in RAM.
+- The DMIO golden sample carries the new capability bit.
+
 ## 0.1.2 — 2026-11-26
 
 - **Safety:** a controlled stop within 10 ms of enabling the arm no longer drives it. The stop's speed estimate kept the commands from before the disable, read the enable's rebase to the current angle as motion (a step of about 55 mrad as about 5.5 rad/s) and braked the command along it for up to 0.25 s of that speed. On the arm, a STOP right after a refused mode switch moved J5 by 1.0 rad and J6 by 0.9 rad from rest, hit the J6 torque limit and overheated the J5 coil. The estimate now starts over at every enable. Update from 0.1.0 or 0.1.1.

@@ -14,6 +14,9 @@ static const float high[APP_IMP_PARAMETERS]={30.f,3.f,300.f,50.f,15.f,5.f,3.f};
 static const float rate[APP_IMP_PARAMETERS]={20.f,2.f,100.f,20.f,5.f,2.f,2.f};
 float AppImpedance_ParameterMin(uint8_t i){return i<APP_IMP_PARAMETERS?low[i]:0.f;}
 float AppImpedance_ParameterMax(uint8_t i){return i<APP_IMP_PARAMETERS?high[i]:0.f;}
+static const float initial_value[APP_IMP_PARAMETERS]=INITIAL_GAINS;
+float AppImpedance_ParameterRate(uint8_t i){return i<APP_IMP_PARAMETERS?rate[i]:0.f;}
+float AppImpedance_ParameterDefault(uint8_t i){return i<APP_IMP_PARAMETERS?initial_value[i]:0.f;}
 uint8_t AppImpedance_SetParameter(uint8_t i,float value)
 {
   if(i>=APP_IMP_PARAMETERS || !isfinite(value) || value<low[i] || value>high[i]) return 0;

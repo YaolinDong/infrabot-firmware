@@ -16,6 +16,8 @@ uint8_t AppGravity_SetParameter(uint8_t index, float value);
 void AppGravity_GetParameters(AppGravityParameters *out);
 float AppGravity_ParameterMin(uint8_t index);
 float AppGravity_ParameterMax(uint8_t index);
+float AppGravity_ParameterRate(uint8_t index); /* largest change of the applied value, units per second */
+float AppGravity_ParameterDefault(uint8_t index);
 /* Local diagnostics; do not add/change wire status or stop-reason numbers.
  * INVALID_TARGET uses checks 1..6 as stop_detail while stop_mode is gravity. */
 enum { APP_GRAVITY_CHECK_NONE, APP_GRAVITY_CHECK_NONFINITE, APP_GRAVITY_CHECK_SPEED,

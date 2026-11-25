@@ -27,6 +27,9 @@ static AppGravityParameters parameters = {
 };
 float AppGravity_ParameterMin(uint8_t i) { return i<APP_GRAVITY_PARAMETERS ? parameter_min[i] : 0.f; }
 float AppGravity_ParameterMax(uint8_t i) { return i<APP_GRAVITY_PARAMETERS ? parameter_max[i] : 0.f; }
+static const float parameter_default[] = {DM_GRAVITY_KD, DM_GRAVITY_LOCK_KP};
+float AppGravity_ParameterRate(uint8_t i) { return i<APP_GRAVITY_PARAMETERS ? parameter_rate[i] : 0.f; }
+float AppGravity_ParameterDefault(uint8_t i) { return i<APP_GRAVITY_PARAMETERS ? parameter_default[i] : 0.f; }
 uint8_t AppGravity_SetParameter(uint8_t i,float value) {
   if(i>=APP_GRAVITY_PARAMETERS || !isfinite(value) || value<parameter_min[i] || value>parameter_max[i]) return 0U;
   platform_enter_critical(); parameters.value[i]=value; platform_exit_critical();

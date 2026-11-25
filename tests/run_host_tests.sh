@@ -62,6 +62,7 @@ if wanted $SELECTED || { CURRENT=test_app_gravity; wanted $SELECTED; } || { CURR
     -c $HOST_SRC/arm_gravity.cpp -o "$OUT/gravity.o"
 fi
 run test_protocol_info -Itests/mocks/info $INCLUDES drivers/net/app_info.c tests/info_fixture.c tests/test_protocol_info.c
+run test_app_param -DAPP_GRAVITY_REAL_TEST -Itests/mocks $INCLUDES -ffunction-sections -fdata-sections $HOST_SRC/app_param.c $HOST_SRC/app_gravity.c $HOST_SRC/app_impedance.c $HOST_SRC/app_admittance_parameters.c tests/test_app_param.c -Wl,--gc-sections
 run test_dm_protocol -Idrivers/damiao drivers/damiao/dm_protocol.c tests/test_dm_protocol.c
 run test_dm_protocol_equivalence -ffp-contract=off -Idrivers/damiao drivers/damiao/dm_protocol.c tests/test_dm_protocol_equivalence.c
 run test_admittance_release_fk -O2 $INCLUDES $HOST_SRC/arm_admittance.c $HOST_SRC/infrabot_ik_mcu.c tests/test_admittance_release_fk.c

@@ -5,6 +5,7 @@
 #include "app_runtime.h"
 #include "app_ethernet.h"
 #include "app_info.h"
+#include "app_param.h"
 #ifdef FW_NETBOOT_APP
 #include "update.h"
 #endif
@@ -139,6 +140,41 @@ static uint8_t AppEthernet_TryInfo(struct pbuf *p, const ip_addr_t *addr, uint16
     if (out != NULL) {
       memcpy(out->payload, &reply, length);
       (void)udp_sendto(telemetry_pcb, out, addr, port);
+      pbuf_free(out);
+    }
+  }
+  return 1U;
+}
+
+/* True when this sender may change parameters: it controls the arm, or no one does.
+ * Unlike AppEthernet_ControlOwnerAllowed it never takes ownership. */
+static uint8_t AppEthernet_ParamWriteAllowed(const ip_addr_t *addr, uint16_t port)
+{
+  const uint32_t ip = ip4_addr_get_u32(ip_2_ip4(addr));
+  const uint8_t arm_idle = (dm_motor_runtime.control_enabled == 0U) &&
+                           !AppMotion_Owned() &&
+                           eth_udp_command.control_mode == DM_ETH_CONTROL_IDLE;
+  const uint8_t owner_quiet =
+      (HAL_GetTick() - control_owner_last_tick) > (DM_ETH_COMMAND_TIMEOUT_MS * 5U);
+  if (!control_owner_valid || arm_idle || owner_quiet) return 1U;
+  return (control_owner_ip == ip && control_owner_port == port) ? 1U : 0U;
+}
+
+/* Parameter service: one DMPR in, one DMPA out from the command port. */
+static uint8_t AppEthernet_TryParam(struct pbuf *p, const ip_addr_t *addr, uint16_t port)
+{
+  InfrabotParamRequest request;
+  if (p->tot_len != sizeof(request) ||
+      pbuf_copy_partial(p, &request, sizeof(request), 0U) != sizeof(request)) return 0U;
+  InfrabotParamReply reply;
+  const uint8_t may_write = (addr != NULL && AppEthernet_ParamWriteAllowed(addr, port)) ? 1U : 0U;
+  const uint16_t length = AppParam_Handle(&request, may_write, &reply);
+  if (length == 0U) return 0U;
+  if (addr != NULL && command_pcb != NULL) {
+    struct pbuf *out = pbuf_alloc(PBUF_TRANSPORT, length, PBUF_RAM);
+    if (out != NULL) {
+      memcpy(out->payload, &reply, length);
+      (void)udp_sendto(command_pcb, out, addr, port);
       pbuf_free(out);
     }
   }
@@ -778,7 +814,7 @@ static void AppEthernet_CommandReceive(void *arg, struct udp_pcb *pcb, struct pb
   }
   if (p != NULL)
   {
-    if (AppEthernet_TryInfo(p, addr, port))
+    if (AppEthernet_TryInfo(p, addr, port) || AppEthernet_TryParam(p, addr, port))
     {
       pbuf_free(p);
       return;

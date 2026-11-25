@@ -31,7 +31,7 @@ int main(void)
     request.crc32 = infrabot_crc32(&request, offsetof(InfrabotInfoRequest, crc32));
     assert(AppInfo_Reply(&request, &reply) == sizeof(reply));
     assert(!memcmp(&expected, &reply.info, sizeof(expected)));
-    assert(reply.protocol_major == 1 && reply.protocol_minor == 0);
+    assert(reply.protocol_major == 1 && reply.protocol_minor == 1);
     assert(!strcmp(reply.board, "fire-h743-v2") && !strcmp(reply.arm_model, "H7C bare v1"));
     assert(!strcmp(reply.firmware_version, "01234567890123456789012"));
     assert(reply.crc32 == infrabot_crc32(&reply, offsetof(InfrabotInfoReplyV2, crc32)));

@@ -21,6 +21,8 @@ uint8_t AppAdmittance_SetParameter(uint8_t index,float value);
 void AppAdmittance_GetParameters(AppAdmittanceParameters *out);
 float AppAdmittance_ParameterMin(uint8_t index);
 float AppAdmittance_ParameterMax(uint8_t index);
+float AppAdmittance_ParameterRate(uint8_t index); /* largest change of the applied value, units per second */
+float AppAdmittance_ParameterDefault(uint8_t index);
 ArmAdmittanceParameters AppAdmittance_Applied(void); /* control-task owner */
 void AppAdmittance_ParametersTick(float dt);
 uint8_t AppAdmittance_EntryAllowed(const float q[7]);

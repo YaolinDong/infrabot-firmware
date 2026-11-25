@@ -439,6 +439,16 @@ static void AppStartup_MotorBringup(void)
   AppStartup_StepDelay(DM_CONFIG_SETTLE_MS);
   AppStartup_ClearAll();
   dm_bus_stats.feedback_enabled = 1U;
+  /* The preflight probes with ENABLE, and its answer (state ENABLED) is the
+   * last feedback parsed: the disable and clear replies above arrived with
+   * feedback processing off, and nothing polls a disabled drive.  Ask every
+   * drive once more, so telemetry starts from the state it reports now. */
+  for (uint8_t i = 0U; i < DM_MOTOR_COUNT; i++)
+  {
+    if ((preflight_present & (1UL << i)) == 0U) continue;
+    (void)DM_Motor_RequestFeedback(&hfdcan2, &dm_motors[i]);
+    AppStartup_StepDelay(1U);
+  }
 
   if (HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan2) != 32U)
   {

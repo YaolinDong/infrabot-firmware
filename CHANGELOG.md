@@ -6,6 +6,7 @@
 - Diagnostic snapshot (capability `INFRABOT_CAP_DIAGNOSTICS`): DMDR and DMDA on the command port return the status task's last one-second window, totals since boot, CAN error state, heap free and lowest, least free stack of the control, status and Ethernet tasks, and drive states. Read only and open to any PC.
 - The DMIO golden sample carries the new capability bits.
 - Telemetry right after boot reports each drive's real state: bring-up asks every drive for feedback once more after disabling it. Before, J1–J7 showed ENABLED (the answer to the preflight probe) until the first enable.
+- While the gripper group is enabled with the arm already holding, the arm's MIT hold frames carry the torque feed-forward in the drive frame, as the 1 kHz tick does. Before, J2 and J4 got it with the sign reversed for each attempt, so an IDLE hold after a local mode shook while an absent gripper was being retried.
 
 ## 0.1.2 — 2026-11-26
 

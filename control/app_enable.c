@@ -69,7 +69,10 @@ static uint8_t answered(uint8_t i, uint32_t before, uint32_t now)
 }
 
 /* One cyclic frame holding drive i at hold_position (encoder rad) in its
- * selected mode. */
+ * selected mode.  The MIT torque feed-forward is in the joint frame, so it is
+ * turned into the drive frame as the 1 kHz tick does: an arm holding against
+ * gravity in IDLE keeps that support while the gripper is brought up, instead
+ * of getting it reversed on J2/J4 for the length of each attempt. */
 static int hold_frame(uint8_t i, float hold_position)
 {
   switch (eth_udp_command.motor_mode[i])
@@ -91,7 +94,8 @@ static int hold_frame(uint8_t i, float hold_position)
     default:
       return platform_drive_mit(&dm_motors[i], hold_position, 0.0f,
                           eth_udp_command.target_kp[i], eth_udp_command.target_kd[i],
-                          eth_udp_command.target_torque[i]);
+                          dm_motor_runtime.stopped[i] ? 0.0f :
+                          DM_MOTOR_DIRECTION(i) * eth_udp_command.target_torque[i]);
   }
 }
 

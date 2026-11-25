@@ -22,7 +22,7 @@ uint16_t AppDamiao_ModeId(uint8_t mode) { return (uint16_t)((mode - 1U) * 0x100U
  * Disable switch its power stage. */
 static uint8_t present[8], powered[8], fail_enable[8];
 static unsigned frames[8], enables[8], disables[8];
-static float last_hold[8];
+static float last_hold[8], last_torque[8];
 
 static unsigned drive(const DM_Motor_t *motor) { return (unsigned)(motor - dm_motors); }
 static HAL_StatusTypeDef frame(const DM_Motor_t *motor)
@@ -64,8 +64,9 @@ HAL_StatusTypeDef DM_Motor_RequestFeedback(FDCAN_HandleTypeDef *hfdcan, const DM
 HAL_StatusTypeDef DM_Motor_MIT(FDCAN_HandleTypeDef *hfdcan, const DM_Motor_t *motor, float position,
                                float velocity, float kp, float kd, float torque)
 {
-  (void)hfdcan; (void)velocity; (void)kp; (void)kd; (void)torque;
+  (void)hfdcan; (void)velocity; (void)kp; (void)kd;
   last_hold[drive(motor)] = position;
+  last_torque[drive(motor)] = torque;
   return frame(motor);
 }
 HAL_StatusTypeDef DM_Motor_Position(FDCAN_HandleTypeDef *hfdcan, const DM_Motor_t *motor, float position,
@@ -99,7 +100,9 @@ static void reset(void)
     present[i] = 1;
     powered[i] = fail_enable[i] = 0;
     frames[i] = enables[i] = disables[i] = 0;
-    last_hold[i] = NAN;
+    last_hold[i] = last_torque[i] = NAN;
+    eth_udp_command.target_torque[i] = 0.0f;
+    dm_motor_runtime.stopped[i] = 0;
     dm_motor_runtime.enabled[i] = 0;
     eth_udp_command.motor_mode[i] = i == 7 ? DM_ETH_MODE_FORCE_POS : DM_ETH_MODE_MIT;
     dm_motor_runtime.command_position[i] = dm_motor_runtime.zero_offset[i] = 0.0f;
@@ -136,10 +139,22 @@ int main(void)
   assert(!AppEnable_Start(DM_ARM_MOTOR_MASK)); /* enabled already: not a new epoch */
 
   /* The gripper while the arm holds a command 20 mrad above its sagging
-   * angle: the arm keeps that command throughout and is not re-enabled. */
-  for (unsigned i = 0; i < 7; ++i) dm_motor_runtime.command_position[i] = dm_motors[i].position + 0.02f;
+   * angle, with the gravity feed-forward an IDLE hold keeps after a local
+   * mode (joint frame): the arm keeps both throughout and is not re-enabled.
+   * The feed-forward reaches the drives in their frame (J2/J4 reversed), as
+   * the 1 kHz tick sends it, and a braked joint gets none. */
+  for (unsigned i = 0; i < 7; ++i) {
+    dm_motor_runtime.command_position[i] = dm_motors[i].position + 0.02f;
+    eth_udp_command.target_torque[i] = 1.0f + (float)i;
+  }
+  dm_motor_runtime.stopped[6] = 1;
   assert(AppEnable_Start(DM_GRIPPER_MOTOR_MASK));
   run();
+  for (unsigned i = 0; i < 6; ++i)
+    assert(fabsf(last_torque[i] - DM_MOTOR_DIRECTION(i) * (1.0f + (float)i)) < 1e-6f);
+  assert(DM_MOTOR_DIRECTION(1) < 0.0f && last_torque[1] < 0.0f && last_torque[6] == 0.0f);
+  dm_motor_runtime.stopped[6] = 0;
+  for (unsigned i = 0; i < 7; ++i) eth_udp_command.target_torque[i] = 0.0f;
   assert(dm_motor_runtime.enabled[7] && powered[7] && dm_motor_runtime.control_enabled);
   assert(dm_motor_runtime.command_position[7] == dm_motors[7].position);
   for (unsigned i = 0; i < 7; ++i) {

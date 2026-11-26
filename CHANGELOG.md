@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0 — unreleased
+## 0.2.0 — 2026-11-26
 
 - Parameter service (protocol 1.1, capability `INFRABOT_CAP_PARAMETERS`): DMPR and DMPA on the command port list, read and write the gravity, impedance and admittance parameters by id, with name, unit, range, default and slew rate. Writes use the touchscreen limits and slew and live in RAM.
 - Diagnostic snapshot (capability `INFRABOT_CAP_DIAGNOSTICS`): DMDR and DMDA on the command port return the status task's last one-second window, totals since boot, CAN error state, heap free and lowest, least free stack of the control, status and Ethernet tasks, and drive states. Read only and open to any PC.
